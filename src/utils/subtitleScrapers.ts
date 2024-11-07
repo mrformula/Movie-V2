@@ -136,6 +136,27 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
                         // চেক করি এটা TV সিরিজ কিনা
                         const isTVSeries = await checkIfTVSeries(movieTitle, releaseInfo);
 
+                        // সিজন এবং এপিসোড নাম্বার এক্সট্র্যাক্ট করি
+                        let seasonNumber: number | undefined;
+                        let episodeNumber: number | undefined;
+
+                        if (isTVSeries) {
+                            const episodeInfo = releaseInfo.match(/S(\d{1,2})[\s\.]?E(\d{1,2})/i) ||
+                                releaseInfo.match(/Season\s*(\d+)\s*Episode\s*(\d+)/i) ||
+                                releaseInfo.match(/(\d{1,2})x(\d{1,2})/);
+
+                            if (episodeInfo) {
+                                seasonNumber = parseInt(episodeInfo[1]);
+                                episodeNumber = parseInt(episodeInfo[2]);
+                            } else {
+                                // শুধু সিজন নাম্বার খুঁজি
+                                const seasonMatch = releaseInfo.match(/Season\s*(\d+)/i);
+                                if (seasonMatch) {
+                                    seasonNumber = parseInt(seasonMatch[1]);
+                                }
+                            }
+                        }
+
                         const subtitle: Subtitle = {
                             id: Math.random().toString(),
                             movieTitle,
