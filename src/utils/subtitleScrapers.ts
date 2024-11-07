@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 import { Subtitle } from '@/types';
 import { getImdbIdFromTmdb } from './tmdbHelper';
 
-async function isTVSeries(title: string, releaseInfo: string): Promise<boolean> {
+async function checkIfTVSeries(title: string, releaseInfo: string): Promise<boolean> {
     // প্যাটার্ন ম্যাচিং
     const patterns = [
         /S\d{1,2}E\d{1,2}/i,                  // S01E01
@@ -24,7 +24,6 @@ async function isTVSeries(title: string, releaseInfo: string): Promise<boolean> 
 
         const results = response.data.results;
         if (results && results.length > 0) {
-            // প্রথম রেজাল্টের মিডিয়া টাইপ চেক করি
             return results[0].media_type === 'tv';
         }
     } catch (error) {
@@ -127,13 +126,13 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
 
                     if (downloadUrl) {
                         // চেক করি এটা TV সিরিজ কিনা
-                        const isSeries = await isTVSeries(movieTitle, releaseInfo);
+                        const isTVSeries = await checkIfTVSeries(movieTitle, releaseInfo);
 
                         // সিজন এবং এপিসোড নাম্বার এক্সট্র্যাক্ট করি
                         let seasonNumber: number | undefined;
                         let episodeNumber: number | undefined;
 
-                        if (isSeries) {
+                        if (isTVSeries) {
                             const episodeInfo = releaseInfo.match(/S(\d{1,2})[\s\.]?E(\d{1,2})/i) ||
                                 releaseInfo.match(/Season\s*(\d+)\s*Episode\s*(\d+)/i) ||
                                 releaseInfo.match(/(\d{1,2})x(\d{1,2})/);

@@ -14,6 +14,7 @@ export interface Subtitle {
     isAIGenerated?: boolean;
     seasonNumber?: number;
     episodeNumber?: number;
+    isTVSeries?: boolean;
 }
 
 export interface SearchResult {
