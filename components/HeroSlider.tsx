@@ -4,17 +4,10 @@ import { FiPlay, FiInfo, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import type { Movie as MovieType } from '@/types/movie';
 
-interface Movie {
-    _id: string;
-    title: string;
-    poster: string;
-    backdrop: string;
-    overview: string;
-    year: number;
-    rating: number;
-    genres: string[];
-    quality: string;
+interface Movie extends Omit<MovieType, 'backdrop'> {
+    backdrop: string;  // Make backdrop required and non-null
 }
 
 interface TVSeries extends Movie {
@@ -22,11 +15,11 @@ interface TVSeries extends Movie {
 }
 
 interface HeroSliderProps {
-    latestMovies: Movie[];
+    latestMovies: MovieType[];
     latestTVSeries: TVSeries[];
-    popularMovies: Movie[];
+    popularMovies: MovieType[];
     popularTVSeries: TVSeries[];
-    featuredContent: (Movie | TVSeries)[];
+    featuredContent: (MovieType | TVSeries)[];
 }
 
 // Add this type
