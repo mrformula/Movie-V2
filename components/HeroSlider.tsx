@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, RefObject } from 'react';
 import Link from 'next/link';
 import { FiPlay, FiInfo, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Slider from 'react-slick';
@@ -37,7 +37,7 @@ export default function HeroSlider({
     featuredContent
 }: HeroSliderProps) {
     const [activeSlide, setActiveSlide] = useState(0);
-    const sliderRef = useRef<any>(null);
+    const sliderRef = useRef<Slider>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
