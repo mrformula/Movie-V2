@@ -3,27 +3,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { FiEdit2, FiTrash2, FiPlus, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import MovieEditModal from '@/components/MovieEditModal';
-
-interface DownloadLink {
-    quality: string;
-    url: string;
-}
-
-interface Movie {
-    _id: string;
-    tmdbId: string;
-    title: string;
-    poster: string;
-    backdrop: string | null;
-    genres: string[];
-    year: number;
-    rating: number;
-    quality: string;
-    streamwishId: string;
-    embedCode: string;
-    overview: string;
-    downloadLinks?: DownloadLink[];
-}
+import type { Movie, DownloadLink } from '@/types/movie';
 
 const MoviesManagement: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);

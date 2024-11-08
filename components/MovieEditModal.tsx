@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FiX, FiPlus } from 'react-icons/fi';
+import type { Movie, DownloadLink } from '@/types/movie';
 
 const AVAILABLE_LANGUAGES = [
     'Bengali',
@@ -13,29 +14,10 @@ const AVAILABLE_LANGUAGES = [
     'Multi Audio'
 ];
 
-interface DownloadLink {
-    language: string[];
-    quality: string;
-    size: string;
-    format: string;
-    type: string;
-    url: string;
-}
-
 interface Props {
-    movie: {
-        _id: string;
-        title: string;
-        poster: string;
-        genres: string[];
-        year: number;
-        quality: string;
-        embedCode: string;
-        streamwishId: string;
-        downloadLinks?: DownloadLink[];
-    };
+    movie: Movie;
     onClose: () => void;
-    onSave: (updates: any) => void;
+    onSave: (updates: Partial<Movie>) => Promise<void>;
 }
 
 export default function MovieEditModal({ movie, onClose, onSave }: Props) {
