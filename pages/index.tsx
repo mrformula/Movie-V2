@@ -409,7 +409,7 @@ function getAllEpisodeLanguages(series: TVSeries) {
             if (season.episodes) {
                 season.episodes.forEach(episode => {
                     if (episode.downloadLinks) {
-                        episode.downloadLinks.forEach(link => {
+                        episode.downloadLinks.forEach((link: DownloadLink) => {
                             if (Array.isArray(link.language)) {
                                 allLanguages.push(...link.language);
                             }
@@ -429,7 +429,7 @@ const getSeriesLanguages = (series: TVSeries): string => {
     const uniqueLanguages = Array.from(new Set(
         series.languages.map(lang => lang.toLowerCase())
     )).map(lang => {
-        const originalLang = series.languages.find(l => l.toLowerCase() === lang);
+        const originalLang = series.languages?.find(l => l.toLowerCase() === lang);
         return originalLang || lang;
     });
 
