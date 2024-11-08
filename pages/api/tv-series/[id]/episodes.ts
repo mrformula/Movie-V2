@@ -12,22 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { id } = req.query;
     await connectDB();
 
-    if (req.method === 'GET') {
-        try {
-            const series = await TvSeries.findById(id);
-            if (!series) {
-                return res.status(404).json({ error: 'TV series not found' });
-            }
-            res.status(200).json(series.episodes);
-        } catch (error: any) {
-            console.error('Error fetching episodes:', error);
-            res.status(500).json({
-                error: 'Error fetching episodes',
-                details: error?.message || 'Unknown error'
-            });
-        }
-    }
-    else if (req.method === 'PUT') {
+    if (req.method === 'PUT') {
         try {
             const { seasonNumber, episodeNumber, ...updates } = req.body;
 
@@ -48,27 +33,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ error: 'TV series not found' });
             }
 
-            // Find the season and episode
-            const season = series.manualSeasons?.find((s: Season) => s.seasonNumber === seasonNumber);
-            if (!season) {
+            // Find the season
+            const seasonIndex = series.manualSeasons.findIndex(
+                (s: Season) => s.seasonNumber === seasonNumber
+            );
+
+            if (seasonIndex === -1) {
                 return res.status(404).json({ error: 'Season not found' });
             }
 
-            const episodeIndex = season.episodes.findIndex((e: Episode) => e.episodeNumber === episodeNumber);
+            // Find the episode
+            const episodeIndex = series.manualSeasons[seasonIndex].episodes.findIndex(
+                (e: Episode) => e.episodeNumber === episodeNumber
+            );
+
             if (episodeIndex === -1) {
                 return res.status(404).json({ error: 'Episode not found' });
             }
 
             // Update the episode
-            season.episodes[episodeIndex] = {
-                ...season.episodes[episodeIndex],
-                ...updates,
-                embedCode: updates.embedCode || season.episodes[episodeIndex].embedCode,
-                downloadLinks: updates.downloadLinks || season.episodes[episodeIndex].downloadLinks
+            series.manualSeasons[seasonIndex].episodes[episodeIndex] = {
+                ...series.manualSeasons[seasonIndex].episodes[episodeIndex],
+                ...updates
             };
 
+            // Mark the array as modified
+            series.markModified('manualSeasons');
+
+            // Save the changes
             await series.save();
-            res.status(200).json(season.episodes[episodeIndex]);
+
+            // Return the updated episode
+            res.status(200).json(series.manualSeasons[seasonIndex].episodes[episodeIndex]);
         } catch (error: any) {
             console.error('Error updating episode:', error);
             res.status(500).json({
