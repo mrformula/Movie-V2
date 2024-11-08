@@ -4,29 +4,7 @@ import Navbar from '@/components/Navbar';
 import { FiPlay, FiClock, FiStar, FiDownload, FiArrowLeft } from 'react-icons/fi';
 import VideoPlayer from '@/components/VideoPlayer';
 import AdBlocker from '@/components/AdBlocker';
-
-interface DownloadLink {
-    language: string[];
-    quality: string;
-    size: string;
-    format: string;
-    type: string;
-    url: string;
-}
-
-interface Movie {
-    _id: string;
-    title: string;
-    poster: string;
-    backdrop: string;
-    overview: string;
-    year: number;
-    rating: number;
-    genres: string[];
-    quality: string;
-    embedCode?: string;
-    downloadLinks?: DownloadLink[];
-}
+import type { Movie, DownloadLink } from '@/types/movie';
 
 export default function MovieDetails() {
     const router = useRouter();
@@ -132,6 +110,10 @@ export default function MovieDetails() {
         fetchSettings();
     }, []);
 
+    const hasLinks = (movie: Movie) => {
+        return Boolean(movie.embedCode) || (movie.downloadLinks && movie.downloadLinks.length > 0);
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-primary flex items-center justify-center">
@@ -206,7 +188,7 @@ export default function MovieDetails() {
                                 </p>
 
                                 {/* Action Buttons */}
-                                {(movie.embedCode || movie.downloadLinks?.length > 0) && (
+                                {hasLinks(movie) && (
                                     <div className="flex flex-wrap gap-4 mt-6">
                                         {movie.embedCode && (
                                             <button
