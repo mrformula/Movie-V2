@@ -6,6 +6,7 @@ import AddSeasonModal from '@/components/AddSeasonModal';
 import TVSeriesEditModal from '@/components/TVSeriesEditModal';
 import EpisodeEditModal from '@/components/EpisodeEditModal';
 import type { Episode } from '@/types/episode';
+import type { DownloadLink } from '@/types/movie';
 
 const DashboardLayout = dynamic(() => import('../../components/DashboardLayout'), {
     ssr: false
@@ -36,18 +37,22 @@ interface TVSeries {
     streamwishId: string;
 }
 
+interface SelectedEpisode {
+    seriesId: string;
+    seasonNumber: number;
+    episodeNumber: number;
+    title: string;
+    embedCode: string;
+    streamwishId: string;
+    downloadLinks: DownloadLink[];
+}
+
 const TVSeriesManagement: React.FC = () => {
     const [series, setSeries] = useState<TVSeries[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedSeasons, setExpandedSeasons] = useState<{ [key: string]: boolean }>({});
     const [viewMode, setViewMode] = useState<'auto' | 'manual'>('auto');
-    const [selectedEpisode, setSelectedEpisode] = useState<{
-        seriesId: string;
-        seasonNumber: number;
-        episodeNumber: number;
-        embedCode: string;
-        downloadLinks?: string[];
-    } | null>(null);
+    const [selectedEpisode, setSelectedEpisode] = useState<SelectedEpisode | null>(null);
     const [expandedEpisodes, setExpandedEpisodes] = useState<{ [key: string]: boolean }>({});
     const [showAddSeasonModal, setShowAddSeasonModal] = useState(false);
     const [editingEpisode, setEditingEpisode] = useState<{
@@ -87,7 +92,9 @@ const TVSeriesManagement: React.FC = () => {
             seriesId,
             seasonNumber,
             episodeNumber: episode.episodeNumber,
-            embedCode: episode.embedCode || '',
+            title: episode.title,
+            embedCode: episode.embedCode,
+            streamwishId: episode.streamwishId,
             downloadLinks: episode.downloadLinks || []
         });
     };
@@ -358,8 +365,8 @@ const TVSeriesManagement: React.FC = () => {
                                                             <div
                                                                 key={episode.episodeNumber}
                                                                 className={`bg-primary p-4 rounded-lg ${hasLinks(episode)
-                                                                        ? 'border-l-4 border-green-500'
-                                                                        : 'border-l-4 border-red-500'
+                                                                    ? 'border-l-4 border-green-500'
+                                                                    : 'border-l-4 border-red-500'
                                                                     }`}
                                                             >
                                                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
