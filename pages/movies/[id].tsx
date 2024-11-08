@@ -114,6 +114,10 @@ export default function MovieDetails() {
         return Boolean(movie.embedCode) || (movie.downloadLinks && movie.downloadLinks.length > 0);
     };
 
+    const hasDownloadLinks = (movie: Movie) => {
+        return movie.downloadLinks && movie.downloadLinks.length > 0;
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-primary flex items-center justify-center">
@@ -224,7 +228,7 @@ export default function MovieDetails() {
 
                 {/* Player/Download Section */}
                 <div id="player-section" className="mt-12">
-                    {showDownloadSection ? (
+                    {showDownloadSection && movie && hasDownloadLinks(movie) ? (
                         <div className="bg-secondary rounded-lg p-6">
                             {/* Back Button */}
                             {movie.embedCode && (
@@ -239,7 +243,7 @@ export default function MovieDetails() {
 
                             <h2 className="text-2xl font-bold text-white mb-6">Download {movie.title}</h2>
                             <div className="space-y-4">
-                                {movie.downloadLinks.map((link, index) => (
+                                {movie.downloadLinks?.map((link, index) => (
                                     <div
                                         key={index}
                                         className="bg-primary rounded-lg p-4 hover:ring-2 hover:ring-purple-500 transition-all duration-200"
