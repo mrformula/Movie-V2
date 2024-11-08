@@ -4,43 +4,20 @@ import { FiFilm, FiTv, FiTrendingUp } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import NoticeBar from '@/components/NoticeBar';
 import HeroSlider from '@/components/HeroSlider';
+import type { Movie, DownloadLink } from '@/types/movie';
 
-interface DownloadLink {
-    language: string[];
-    quality: string;
-    size: string;
-    format: string;
-    type: string;
-    url: string;
-}
-
-interface Movie {
-    _id: string;
-    title: string;
-    poster: string;
-    year: number;
-    rating: number;
-    quality: string;
-    downloadLinks?: DownloadLink[];
-}
-
-interface TVSeries {
-    _id: string;
-    title: string;
-    poster: string;
-    year: number;
-    rating: number;
+interface TVSeries extends Omit<Movie, 'quality'> {
     status: string;
     numberOfSeasons: number;
     viewMode: string;
     autoSeasons?: {
         seasonNumber: number;
         episodes: Episode[];
-    };
+    }[];
     manualSeasons?: {
         seasonNumber: number;
         episodes: Episode[];
-    };
+    }[];
     languages?: string[];
 }
 
