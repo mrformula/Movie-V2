@@ -72,10 +72,15 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
             'Cache-Control': 'max-age=0'
         };
 
+        const BASE_URL = process.env.NODE_ENV === 'development'
+            ? 'https://subscene.cam'
+            : 'https://v2.subscene.com'; // অথবা অন্য কোন ডোমেইন
+
+        // সার্চ রিকোয়েস্টে প্রক্সি ব্যবহার করি
         const searchResponse = await axios.get(
-            `https://subscene.cam/search?query=${encodeURIComponent(searchQuery)}`,
-            { headers }
+            `/api/proxy?url=${encodeURIComponent(`${BASE_URL}/search?query=${searchQuery}`)}`
         );
+
         const $ = cheerio.load(searchResponse.data);
         const subtitleLinks: { url: string; title: string }[] = [];
 
@@ -94,7 +99,10 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitleDetails: { url: string; language: string; uploader: string }[] = [];
 
         for (const { url } of subtitleLinks) {
-            const listResponse = await axios.get(url, { headers });
+            // ডিটেইলস পেজে প্রক্সি ব্যবহার করি
+            const listResponse = await axios.get(
+                `/api/proxy?url=${encodeURIComponent(url)}`
+            );
             const $list = cheerio.load(listResponse.data);
 
             $list('tbody tr').each((_, row) => {
@@ -118,7 +126,9 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitles = await Promise.all(
             subtitleDetails.map(async ({ url, language, uploader }) => {
                 try {
-                    const response = await axios.get(url, { headers });
+                    const response = await axios.get(
+                        `/api/proxy?url=${encodeURIComponent(url)}`
+                    );
                     const $detail = cheerio.load(response.data);
 
                     // Get basic info
