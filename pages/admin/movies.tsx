@@ -17,6 +17,7 @@ interface Movie {
     streamwishId: string;
     embedCode: string;
     overview: string;
+    downloadLinks?: string[];
 }
 
 const MoviesManagement: React.FC = () => {
@@ -95,9 +96,7 @@ const MoviesManagement: React.FC = () => {
                     {filteredMovies.map((movie) => (
                         <div
                             key={movie._id}
-                            className={`bg-primary rounded-lg p-4 ${movie.embedCode || movie.downloadLinks?.length > 0
-                                ? 'border-l-4 border-green-500'
-                                : ''
+                            className={`bg-primary rounded-lg p-4 ${movie.embedCode ? 'border-l-4 border-green-500' : ''
                                 }`}
                         >
                             {/* Movie Header - Made Responsive */}
