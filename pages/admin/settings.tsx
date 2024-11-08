@@ -3,37 +3,19 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-hot-toast';
 import { FiShield, FiUsers, FiPlus, FiAlertCircle, FiSave, FiSearch, FiX, FiStar, FiTrash2 } from 'react-icons/fi';
 import Layout from '../../components/DashboardLayout';
+import type { Settings, NoticeBar, FeaturedContent } from '@/types/settings';
 
-interface FeaturedContent {
-    contentId: string;
-    contentType: 'movie' | 'tvSeries';
-    addedAt: Date;
-}
-
-interface Settings {
-    adBlockEnabled: boolean;
-    popupBlockEnabled: boolean;
-    redirectBlockEnabled: boolean;
-    noticeBar?: {
-        enabled: boolean;
-        text: string;
-        type: string;
-        template: string;
-        link: string;
-        buttonText: string;
-        bgColor: string;
-        textColor: string;
-        buttonColor: string;
-    };
-    featuredContent: FeaturedContent[];
-}
-
-interface User {
-    _id: string;
-    username: string;
-    role: 'admin' | 'moderator';
-    createdAt: Date;
-}
+const defaultNoticeBar: NoticeBar = {
+    enabled: false,
+    text: '',
+    type: 'info',
+    template: '',
+    link: '',
+    buttonText: '',
+    bgColor: '',
+    textColor: '',
+    buttonColor: ''
+};
 
 const Settings = () => {
     const router = useRouter();
@@ -41,6 +23,10 @@ const Settings = () => {
         adBlockEnabled: true,
         popupBlockEnabled: true,
         redirectBlockEnabled: true,
+        blockSocialMedia: false,
+        blockTracking: false,
+        blockInlineScripts: false,
+        noticeBar: defaultNoticeBar,
         featuredContent: []
     });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -94,14 +80,17 @@ const Settings = () => {
     };
 
     const updateSettings = (updates: Partial<Settings>) => {
-        setSettings(prev => ({
-            ...prev,
-            ...updates,
-            noticeBar: {
-                ...prev.noticeBar,
-                ...updates.noticeBar
-            }
-        }));
+        setSettings(prev => {
+            const newSettings: Settings = {
+                ...prev,
+                ...updates,
+                noticeBar: {
+                    ...prev.noticeBar,
+                    ...(updates.noticeBar || {})
+                }
+            };
+            return newSettings;
+        });
         setHasUnsavedChanges(true);
     };
 
