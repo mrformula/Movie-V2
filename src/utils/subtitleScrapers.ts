@@ -64,22 +64,20 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
             'Accept-Language': 'en-US,en;q=0.5',
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Cache-Control': 'max-age=0'
+            'Upgrade-Insecure-Requests': '1'
         };
 
+        // সার্চ URL তৈরি করি
         const BASE_URL = process.env.NODE_ENV === 'development'
             ? 'https://subscene.cam'
-            : 'https://v2.subscene.com'; // অথবা অন্য কোন ডোমেইন
+            : 'https://subscene.cam'; // Changed to use same domain
+
+        // Full URL তৈরি করি
+        const searchUrl = new URL('/search', BASE_URL);
+        searchUrl.searchParams.append('query', searchQuery);
 
         // সার্চ রিকোয়েস্টে প্রক্সি ব্যবহার করি
-        const searchResponse = await axios.get(
-            `/api/proxy?url=${encodeURIComponent(`${BASE_URL}/search?query=${searchQuery}`)}`
-        );
+        const searchResponse = await axios.get(searchUrl.toString(), { headers });
 
         const $ = cheerio.load(searchResponse.data);
         const subtitleLinks: { url: string; title: string }[] = [];
@@ -99,27 +97,29 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitleDetails: { url: string; language: string; uploader: string }[] = [];
 
         for (const { url } of subtitleLinks) {
-            // ডিটেইলস পেজে প্রক্সি ব্যবহার করি
-            const listResponse = await axios.get(
-                `/api/proxy?url=${encodeURIComponent(url)}`
-            );
-            const $list = cheerio.load(listResponse.data);
+            try {
+                const listResponse = await axios.get(url, { headers });
+                const $list = cheerio.load(listResponse.data);
 
-            $list('tbody tr').each((_, row) => {
-                const language = $list(row).find('.a1 span.l').text().trim();
-                if (language.toLowerCase().includes('bengali')) {
-                    const detailUrl = $list(row).find('.a1 a').attr('href');
-                    const uploader = $list(row).find('.a5 a').text().trim() || 'Unknown';
+                $list('tbody tr').each((_, row) => {
+                    const language = $list(row).find('.a1 span.l').text().trim();
+                    if (language.toLowerCase().includes('bengali')) {
+                        const detailUrl = $list(row).find('.a1 a').attr('href');
+                        const uploader = $list(row).find('.a5 a').text().trim() || 'Unknown';
 
-                    if (detailUrl) {
-                        subtitleDetails.push({
-                            url: `https://subscene.cam${detailUrl}`,
-                            language,
-                            uploader
-                        });
+                        if (detailUrl) {
+                            subtitleDetails.push({
+                                url: `https://subscene.cam${detailUrl}`,
+                                language,
+                                uploader
+                            });
+                        }
                     }
-                }
-            });
+                });
+            } catch (error) {
+                console.error(`Error fetching list page: ${url}`, error);
+                continue;
+            }
         }
 
         // Step 3: Get details from each subtitle page
