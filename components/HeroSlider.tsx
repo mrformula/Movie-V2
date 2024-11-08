@@ -130,6 +130,10 @@ export default function HeroSlider({
         return !('numberOfSeasons' in content);
     };
 
+    const isTVSeries = (content: Movie | TVSeries): content is TVSeries => {
+        return 'numberOfSeasons' in content;
+    };
+
     if (sliderContent.length === 0) {
         return null;
     }
@@ -208,7 +212,7 @@ export default function HeroSlider({
                                                 <span className="bg-blue-500/20 text-blue-400 px-4 py-1.5 rounded-full border border-blue-500/30">
                                                     {content.quality}
                                                 </span>
-                                                {!isMovie(content) && (
+                                                {!isMovie(content) && isTVSeries(content) && (
                                                     <span className="bg-pink-500/20 text-pink-400 px-4 py-1.5 rounded-full border border-pink-500/30">
                                                         {content.numberOfSeasons} Seasons
                                                     </span>
