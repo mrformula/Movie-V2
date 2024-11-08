@@ -20,7 +20,10 @@
         "baseUrl": ".",
         "paths": {
             "@/*": [
-                "./src/*"
+                "./*"
+            ],
+            "@components/*": [
+                "./components/*"
             ]
         }
     },

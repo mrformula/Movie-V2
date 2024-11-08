@@ -1,12 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    output: 'standalone',
     images: {
-        domains: ['res.subscene.best', 'image.tmdb.org'],
+        domains: ['image.tmdb.org', 'themoviedb.org'],
     },
-    experimental: {
-        outputStandalone: true
-    }
+    swcMinify: true,
+    compiler: {
+        removeConsole: process.env.NODE_ENV === "production",
+    },
 }
 
 module.exports = nextConfig 
