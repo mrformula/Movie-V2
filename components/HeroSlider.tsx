@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import type { Movie as MovieType } from '@/types/movie';
 
 interface Movie extends Omit<MovieType, 'backdrop'> {
-    backdrop: string;  // Make backdrop required and non-null
+    backdrop: string;
 }
 
 interface TVSeries extends Movie {
@@ -22,7 +22,6 @@ interface HeroSliderProps {
     featuredContent: (MovieType | TVSeries)[];
 }
 
-// Add this type
 type SliderRef = {
     slickNext(): void;
     slickPrev(): void;
@@ -30,6 +29,8 @@ type SliderRef = {
     slickPause(): void;
     slickGoTo(slideNumber: number): void;
 };
+
+type ContentType = MovieType | TVSeries;
 
 export default function HeroSlider({
     latestMovies,
@@ -110,11 +111,11 @@ export default function HeroSlider({
         arrows: false,
     };
 
-    const isMovie = (content: Movie | TVSeries): content is Movie => {
+    const isMovie = (content: ContentType): content is MovieType => {
         return !('numberOfSeasons' in content);
     };
 
-    const isTVSeries = (content: Movie | TVSeries): content is TVSeries => {
+    const isTVSeries = (content: ContentType): content is TVSeries => {
         return 'numberOfSeasons' in content;
     };
 
