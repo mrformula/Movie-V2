@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Find the season and episode
-            const season = series.manualSeasons.find((s: Season) => s.seasonNumber === seasonNumber);
+            const season = series.manualSeasons?.find((s: Season) => s.seasonNumber === seasonNumber);
             if (!season) {
                 return res.status(404).json({ error: 'Season not found' });
             }
@@ -62,7 +62,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Update the episode
             season.episodes[episodeIndex] = {
                 ...season.episodes[episodeIndex],
-                ...updates
+                ...updates,
+                embedCode: updates.embedCode || season.episodes[episodeIndex].embedCode,
+                downloadLinks: updates.downloadLinks || season.episodes[episodeIndex].downloadLinks
             };
 
             await series.save();
