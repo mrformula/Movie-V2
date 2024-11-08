@@ -58,7 +58,24 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         }
 
         // Step 1: Get subtitle list page
-        const searchResponse = await axios.get(`https://subscene.cam/search?query=${encodeURIComponent(searchQuery)}`);
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0'
+        };
+
+        const searchResponse = await axios.get(
+            `https://subscene.cam/search?query=${encodeURIComponent(searchQuery)}`,
+            { headers }
+        );
         const $ = cheerio.load(searchResponse.data);
         const subtitleLinks: { url: string; title: string }[] = [];
 
@@ -77,7 +94,7 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitleDetails: { url: string; language: string; uploader: string }[] = [];
 
         for (const { url } of subtitleLinks) {
-            const listResponse = await axios.get(url);
+            const listResponse = await axios.get(url, { headers });
             const $list = cheerio.load(listResponse.data);
 
             $list('tbody tr').each((_, row) => {
@@ -101,7 +118,7 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitles = await Promise.all(
             subtitleDetails.map(async ({ url, language, uploader }) => {
                 try {
-                    const response = await axios.get(url);
+                    const response = await axios.get(url, { headers });
                     const $detail = cheerio.load(response.data);
 
                     // Get basic info
