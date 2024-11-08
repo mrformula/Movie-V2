@@ -1,6 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import TvSeries from '@/models/TvSeries';
+import type { Episode } from '@/types/episode';
+
+interface Season {
+    seasonNumber: number;
+    episodes: Episode[];
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { id } = req.query;
@@ -43,12 +49,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Find the season and episode
-            const season = series.manualSeasons.find(s => s.seasonNumber === seasonNumber);
+            const season = series.manualSeasons.find((s: Season) => s.seasonNumber === seasonNumber);
             if (!season) {
                 return res.status(404).json({ error: 'Season not found' });
             }
 
-            const episodeIndex = season.episodes.findIndex(e => e.episodeNumber === episodeNumber);
+            const episodeIndex = season.episodes.findIndex((e: Episode) => e.episodeNumber === episodeNumber);
             if (episodeIndex === -1) {
                 return res.status(404).json({ error: 'Episode not found' });
             }
