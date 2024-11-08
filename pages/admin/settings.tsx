@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { FiShield, FiUsers, FiPlus, FiAlertCircle, FiSave, FiSearch, FiX, FiStar, FiTrash2 } from 'react-icons/fi';
 import Layout from '../../components/DashboardLayout';
 import type { Settings, NoticeBar, FeaturedContent } from '@/types/settings';
+import type { User, NewUser } from '@/types/user';
 
 const defaultNoticeBar: NoticeBar = {
     enabled: false,
@@ -35,10 +36,10 @@ const Settings = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
     const [showAddUser, setShowAddUser] = useState(false);
-    const [newUser, setNewUser] = useState({
+    const [newUser, setNewUser] = useState<NewUser>({
         username: '',
         password: '',
-        role: 'moderator' as 'admin' | 'moderator'
+        role: 'moderator'
     });
 
     useEffect(() => {
