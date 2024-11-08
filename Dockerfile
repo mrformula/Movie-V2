@@ -10,11 +10,24 @@ RUN apt-get update && apt-get install -y \
 # Set environment variables
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PORT=3000
 
 WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy rest of the files
 COPY . .
 
-RUN npm install
+# Build the app
 RUN npm run build
 
+# Expose port
+EXPOSE 3000
+
+# Start command
 CMD ["npm", "start"] 
