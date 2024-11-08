@@ -124,7 +124,6 @@ export default function HeroSlider({
                 }
             }
         ],
-        lazyLoad: 'ondemand'
     };
 
     const isMovie = (content: Movie | TVSeries): content is Movie => {
