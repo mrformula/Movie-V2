@@ -1,13 +1,5 @@
 declare module 'react-slick' {
-    import { ComponentType, RefObject } from 'react';
-
-    interface SliderInstance {
-        slickNext(): void;
-        slickPrev(): void;
-        slickPlay(): void;
-        slickPause(): void;
-        slickGoTo(slideNumber: number): void;
-    }
+    import { ComponentType } from 'react';
 
     interface SliderSettings {
         dots?: boolean;
@@ -28,6 +20,7 @@ declare module 'react-slick' {
     interface SliderProps extends SliderSettings {
         children?: React.ReactNode;
         className?: string;
+        ref?: any;
     }
 
     const Slider: ComponentType<SliderProps>;

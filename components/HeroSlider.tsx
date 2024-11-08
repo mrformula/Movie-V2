@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { FiPlay, FiInfo, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import Slider, { SliderInstance } from 'react-slick';
+import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -29,6 +29,15 @@ interface HeroSliderProps {
     featuredContent: (Movie | TVSeries)[];
 }
 
+// Add this type
+type SliderRef = {
+    slickNext(): void;
+    slickPrev(): void;
+    slickPlay(): void;
+    slickPause(): void;
+    slickGoTo(slideNumber: number): void;
+};
+
 export default function HeroSlider({
     latestMovies,
     latestTVSeries,
@@ -37,7 +46,7 @@ export default function HeroSlider({
     featuredContent
 }: HeroSliderProps) {
     const [activeSlide, setActiveSlide] = useState(0);
-    const sliderRef = useRef<SliderInstance>(null);
+    const sliderRef = useRef<SliderRef>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
