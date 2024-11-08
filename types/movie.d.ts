@@ -1,10 +1,10 @@
 export interface DownloadLink {
     quality: string;
     url: string;
-    language?: string;
-    size?: string;
-    format?: string;
-    type?: string;
+    language: string[];
+    size: string;
+    format: string;
+    type: string;
 }
 
 export interface Movie {

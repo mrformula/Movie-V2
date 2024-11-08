@@ -37,7 +37,7 @@ export default function MovieEditModal({ movie, onClose, onSave }: Props) {
             downloadLinks: [
                 ...editedMovie.downloadLinks,
                 {
-                    language: [],
+                    language: [] as string[],
                     quality: '720p',
                     size: '',
                     format: 'mkv',
