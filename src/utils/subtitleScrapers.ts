@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { Subtitle } from '@/types';
 import { getImdbIdFromTmdb } from './tmdbHelper';
+import { fetchWithPuppeteer } from './puppeteerScraper';
 
 async function checkIfTVSeries(title: string, releaseInfo: string): Promise<boolean> {
     // প্যাটার্ন ম্যাচিং
@@ -41,6 +42,60 @@ function isValidSubtitle(sub: any): sub is Subtitle {
         typeof sub.language === 'string';
 }
 
+// Alternative domains
+const DOMAINS = [
+    'https://subscene.club',
+    'https://subscene.best',
+    'https://v2.subscene.com',
+    'https://subscene.life',
+    'https://subscene.vip'
+];
+
+async function getWorkingDomain(): Promise<string> {
+    for (const domain of DOMAINS) {
+        try {
+            const response = await axios.get(domain, {
+                timeout: 5000,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                }
+            });
+            if (response.status === 200) {
+                return domain;
+            }
+        } catch (error) {
+            continue;
+        }
+    }
+    return DOMAINS[0]; // Default to first domain if none work
+}
+
+// Free proxy list
+const PROXY_LIST = [
+    'https://api.scraperapi.com?api_key=YOUR_API_KEY&url=',
+    'https://proxy.scrapeops.io/v1/?api_key=YOUR_API_KEY&url=',
+    'https://api.webscrapingapi.com/v1?api_key=YOUR_API_KEY&url=',
+];
+
+async function fetchWithProxy(url: string) {
+    for (const proxy of PROXY_LIST) {
+        try {
+            const response = await axios.get(proxy + encodeURIComponent(url), {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'
+                },
+                timeout: 30000
+            });
+            if (response.status === 200) {
+                return response.data;
+            }
+        } catch (error) {
+            continue;
+        }
+    }
+    throw new Error('All proxies failed');
+}
+
 export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
     try {
         let searchQuery = query;
@@ -57,7 +112,10 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
             if (match) searchQuery = match[1];
         }
 
-        // Step 1: Get subtitle list page
+        // Get working domain
+        const BASE_URL = await getWorkingDomain();
+        console.log('Using domain:', BASE_URL);
+
         const headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -67,19 +125,14 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
             'Upgrade-Insecure-Requests': '1'
         };
 
-        // সার্চ URL তৈরি করি
-        const BASE_URL = process.env.NODE_ENV === 'development'
-            ? 'https://subscene.cam'
-            : 'https://subscene.cam'; // Changed to use same domain
-
         // Full URL তৈরি করি
         const searchUrl = new URL('/search', BASE_URL);
         searchUrl.searchParams.append('query', searchQuery);
 
-        // সার্চ রিকোয়েস্টে প্রক্সি ব্যবহার করি
-        const searchResponse = await axios.get(searchUrl.toString(), { headers });
+        // Use Puppeteer for search request
+        const searchHtml = await fetchWithPuppeteer(`${BASE_URL}/search?query=${searchQuery}`);
+        const $ = cheerio.load(searchHtml);
 
-        const $ = cheerio.load(searchResponse.data);
         const subtitleLinks: { url: string; title: string }[] = [];
 
         // Get all subtitle links
@@ -126,10 +179,9 @@ export async function scrapeSubscene(query: string): Promise<Subtitle[]> {
         const subtitles = await Promise.all(
             subtitleDetails.map(async ({ url, language, uploader }) => {
                 try {
-                    const response = await axios.get(
-                        `/api/proxy?url=${encodeURIComponent(url)}`
-                    );
-                    const $detail = cheerio.load(response.data);
+                    // Use Puppeteer for detail pages
+                    const detailHtml = await fetchWithPuppeteer(url);
+                    const $detail = cheerio.load(detailHtml);
 
                     // Get basic info
                     const posterUrl = $detail('.box.subtitle .poster img').attr('src');
