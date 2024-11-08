@@ -1,25 +1,30 @@
 import mongoose from 'mongoose';
 
 declare global {
-    var mongoose: {
+    // eslint-disable-next-line no-var
+    var _mongoose: {
         conn: any;
         promise: Promise<any> | null;
-    };
+    } | undefined;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://realtechbd3:OMZVjlDOUiR8ODfO@cluster0.cr9m6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
     throw new Error('Please define the MONGODB_URI environment variable inside .env');
 }
 
-let cached = global.mongoose;
+let cached = global._mongoose;
 
 if (!cached) {
-    cached = global.mongoose = { conn: null, promise: null };
+    cached = global._mongoose = { conn: null, promise: null };
 }
 
 async function connectDB() {
+    if (!cached) {
+        throw new Error('MongoDB connection cache not initialized');
+    }
+
     if (cached.conn) {
         return cached.conn;
     }

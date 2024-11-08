@@ -31,7 +31,8 @@
     "slick-carousel": "^1.8.1",
     "timeago.js": "^4.0.2",
     "typescript": "^5.3.3",
-    "video.js": "^8.19.1"
+    "video.js": "^8.19.1",
+    "@types/react-slick": "^0.23.13"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

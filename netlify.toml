@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm install @types/react-slick && npm run build"
   publish = ".next"
 
 [[plugins]]
