@@ -5,21 +5,11 @@ import { toast } from 'react-hot-toast';
 import AddSeasonModal from '@/components/AddSeasonModal';
 import TVSeriesEditModal from '@/components/TVSeriesEditModal';
 import EpisodeEditModal from '@/components/EpisodeEditModal';
+import type { Episode } from '@/types/episode';
 
 const DashboardLayout = dynamic(() => import('../../components/DashboardLayout'), {
     ssr: false
 });
-
-interface Episode {
-    episodeNumber: number;
-    title: string;
-    overview: string;
-    airDate: string;
-    stillPath: string | null;
-    embedCode: string;
-    streamwishId: string;
-    downloadLinks?: string[];
-}
 
 interface Season {
     seasonNumber: number;
@@ -233,6 +223,10 @@ const TVSeriesManagement: React.FC = () => {
         setShowEditModal(true);
     };
 
+    const hasLinks = (episode: Episode) => {
+        return Boolean(episode.embedCode) || (episode.downloadLinks && episode.downloadLinks.length > 0);
+    };
+
     return (
         <div>
             <DashboardLayout>
@@ -363,9 +357,9 @@ const TVSeriesManagement: React.FC = () => {
                                                         {season.episodes.map((episode) => (
                                                             <div
                                                                 key={episode.episodeNumber}
-                                                                className={`bg-primary p-4 rounded-lg ${episode.embedCode || episode.downloadLinks?.length > 0
-                                                                    ? 'border-l-4 border-green-500'
-                                                                    : 'border-l-4 border-red-500'
+                                                                className={`bg-primary p-4 rounded-lg ${hasLinks(episode)
+                                                                        ? 'border-l-4 border-green-500'
+                                                                        : 'border-l-4 border-red-500'
                                                                     }`}
                                                             >
                                                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -382,7 +376,7 @@ const TVSeriesManagement: React.FC = () => {
                                                                             onClick={(e) => handleEpisodeClick(e, show._id, season.seasonNumber, episode)}
                                                                             className="text-blue-400 hover:text-blue-300 text-sm"
                                                                         >
-                                                                            {episode.embedCode || episode.downloadLinks?.length > 0 ? 'Edit Links' : 'Add Links'}
+                                                                            {hasLinks(episode) ? 'Edit Links' : 'Add Links'}
                                                                         </button>
                                                                         {show.viewMode === 'manual' && (
                                                                             <button
