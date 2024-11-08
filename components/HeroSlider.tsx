@@ -187,9 +187,11 @@ export default function HeroSlider({
                                                     <span className="mr-1">⭐</span>
                                                     {content.rating}
                                                 </span>
-                                                <span className="bg-blue-500/20 text-blue-400 px-4 py-1.5 rounded-full border border-blue-500/30">
-                                                    {content.quality}
-                                                </span>
+                                                {isMovie(content) && (
+                                                    <span className="bg-blue-500/20 text-blue-400 px-4 py-1.5 rounded-full border border-blue-500/30">
+                                                        {content.quality}
+                                                    </span>
+                                                )}
                                                 {isTVSeries(content) && (
                                                     <span className="bg-pink-500/20 text-pink-400 px-4 py-1.5 rounded-full border border-pink-500/30">
                                                         {content.numberOfSeasons} Seasons
