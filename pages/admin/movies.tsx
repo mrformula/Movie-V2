@@ -4,6 +4,11 @@ import { FiEdit2, FiTrash2, FiPlus, FiChevronDown, FiChevronUp } from 'react-ico
 import { toast } from 'react-hot-toast';
 import MovieEditModal from '@/components/MovieEditModal';
 
+interface DownloadLink {
+    quality: string;
+    url: string;
+}
+
 interface Movie {
     _id: string;
     tmdbId: string;
@@ -17,7 +22,7 @@ interface Movie {
     streamwishId: string;
     embedCode: string;
     overview: string;
-    downloadLinks?: string[];
+    downloadLinks?: DownloadLink[];
 }
 
 const MoviesManagement: React.FC = () => {
