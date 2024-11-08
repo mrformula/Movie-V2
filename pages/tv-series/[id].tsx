@@ -137,8 +137,8 @@ export default function TVSeriesDetails() {
         const uniqueLanguages = Array.from(new Set(
             series.languages.map(lang => lang.toLowerCase())
         )).map(lang => {
-            const originalLang = series.languages.find(l => l.toLowerCase() === lang);
-            return originalLang || lang;
+            const originalLang = series.languages?.find(l => l.toLowerCase() === lang) || lang;
+            return originalLang;
         });
 
         if (uniqueLanguages.length === 0) return '';
