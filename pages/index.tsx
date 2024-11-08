@@ -5,21 +5,7 @@ import Navbar from '@/components/Navbar';
 import NoticeBar from '@/components/NoticeBar';
 import HeroSlider from '@/components/HeroSlider';
 import type { Movie, DownloadLink } from '@/types/movie';
-
-interface TVSeries extends Omit<Movie, 'quality'> {
-    status: string;
-    numberOfSeasons: number;
-    viewMode: string;
-    autoSeasons?: {
-        seasonNumber: number;
-        episodes: Episode[];
-    }[];
-    manualSeasons?: {
-        seasonNumber: number;
-        episodes: Episode[];
-    }[];
-    languages?: string[];
-}
+import type { TVSeries } from '@/types/tv-series';
 
 interface Episode {
     downloadLinks?: DownloadLink[];

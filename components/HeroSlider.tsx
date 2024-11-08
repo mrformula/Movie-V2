@@ -4,22 +4,15 @@ import { FiPlay, FiInfo, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import type { Movie as MovieType } from '@/types/movie';
-
-interface Movie extends Omit<MovieType, 'backdrop'> {
-    backdrop: string;
-}
-
-interface TVSeries extends Movie {
-    numberOfSeasons: number;
-}
+import type { Movie } from '@/types/movie';
+import type { TVSeries } from '@/types/tv-series';
 
 interface HeroSliderProps {
-    latestMovies: MovieType[];
+    latestMovies: Movie[];
     latestTVSeries: TVSeries[];
-    popularMovies: MovieType[];
+    popularMovies: Movie[];
     popularTVSeries: TVSeries[];
-    featuredContent: (MovieType | TVSeries)[];
+    featuredContent: (Movie | TVSeries)[];
 }
 
 type SliderRef = {
@@ -30,7 +23,7 @@ type SliderRef = {
     slickGoTo(slideNumber: number): void;
 };
 
-type ContentType = MovieType | TVSeries;
+type ContentType = Movie | TVSeries;
 
 export default function HeroSlider({
     latestMovies,
@@ -111,7 +104,7 @@ export default function HeroSlider({
         arrows: false,
     };
 
-    const isMovie = (content: ContentType): content is MovieType => {
+    const isMovie = (content: ContentType): content is Movie => {
         return !('numberOfSeasons' in content);
     };
 
