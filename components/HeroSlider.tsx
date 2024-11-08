@@ -17,16 +17,7 @@ interface Movie {
     quality: string;
 }
 
-interface TVSeries {
-    _id: string;
-    title: string;
-    poster: string;
-    backdrop: string;
-    overview: string;
-    year: number;
-    rating: number;
-    genres: string[];
-    quality: string;
+interface TVSeries extends Movie {
     numberOfSeasons: number;
 }
 
