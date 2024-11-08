@@ -90,13 +90,12 @@ export default function HeroSlider({
     const settings = {
         dots: true,
         infinite: true,
-        speed: 800,
+        speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 2500,
+        autoplaySpeed: 3000,
         fade: true,
-        pauseOnHover: true,
         cssEase: 'cubic-bezier(0.4, 0, 0.2, 1)',
         beforeChange: (current: number, next: number) => {
             setActiveSlide(next);
@@ -107,14 +106,6 @@ export default function HeroSlider({
         ),
         dotsClass: "slick-dots !flex items-center justify-center gap-2 !bottom-6",
         arrows: false,
-        responsive: [
-            {
-                breakpoint: 768,
-                settings: {
-                    autoplaySpeed: 2500,
-                }
-            }
-        ],
     };
 
     const isMovie = (content: Movie | TVSeries): content is Movie => {
